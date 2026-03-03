@@ -1,0 +1,326 @@
+Using Unreal Engine assets across different engine versions
+
+0) Important note (read first)
+
+Our assets come from many sources, so in a small number of cases you may face version mismatch issues (UE4 vs UE5, or different minor versions). Most assets can still be used if you follow the steps below.
+
+---
+
+1) Asset types: Asset Pack vs Complete Project vs Plugin
+
+In Unreal Engine, most downloads fall into these categories:
+
+A) Asset Pack (Content-only / “Asset Package”)
+
+What it is: a set of assets placed inside a Content/ folder (meshes, materials, textures, blueprints, animations, etc.).
+How it looks in files:
+
+* `Content/SomeFolder/...`
+* usually no `.uproject`
+* sometimes comes as a zip that you copy into your project
+
+Best for: importing into an existing game project.
+
+---
+
+B) Complete Project
+
+What it is: a full Unreal project (often a demo) that you open directly.
+How it looks in files:
+
+* has a `.uproject` file (example: `MyProject.uproject`)
+* folders like: `Config/`, `Content/`, sometimes `Source/`, `Plugins/`
+
+Best for: learning from the setup, then migrating only what you need.
+
+---
+
+C) Plugin
+
+What it is: a feature/module that is enabled in a project (code plugin or content plugin).
+How it looks in files:
+
+* `Plugins/PluginName/PluginName.uplugin`
+* may include `Source/` (C++), `Binaries/`, `Content/`
+
+Best for: systems/tools; version compatibility matters more here.
+
+---
+
+2) How to identify the asset’s engine version (if possible)
+
+Sometimes you can tell the intended UE version from the files:
+
+Quick checks
+
+* If you see `.uproject` → open it in a text editor and look for:
+
+  * `"EngineAssociation": "4.27"` (or similar)
+* If you see a `.uplugin` file → open it and look for fields like:
+
+  * `"EngineVersion"`, `"VersionName"`, `"CompatibleEngineVersions"` (not always present)
+* If it’s just a Content folder → exact version is harder to know from files alone.
+
+Inside Unreal Engine (most reliable)
+
+If you can open the asset in any UE version:
+
+* Check the project’s engine version in Help → About Unreal Editor
+* For plugins: check if it enables without compile errors
+* If UE says it must convert/upgrade on open, that’s a strong hint it’s from an older version.
+
+Reality check: you often cannot reliably detect the exact version from `.uasset` files without opening them in UE.
+
+---
+
+3) How to move assets from a Complete Project into your own project (recommended method)
+
+Best method: Migrate
+
+1. Open the asset’s project (the complete project).
+2. In Content Browser, select the folder/assets you need.
+3. Right click → Asset Actions → Migrate.
+4. UE will show dependencies — click OK.
+5. Choose the target folder:
+
+   * `YourProject/Content/`
+
+✅ This brings all required dependencies automatically.
+
+After migrating
+
+* In your target project: right click your Content folder → Fix Up Redirectors in Folder
+* If materials look broken, open them once and let shaders recompile.
+
+---
+
+4) Moving assets from a newer engine version to an older version (UE5 → UE4 or UE5.3 → UE5.1)
+
+This is the hardest case.
+
+Important truth
+
+Unreal generally does not support “downgrading” assets. Newer versions may save assets in formats older versions can’t read.
+
+What usually works (content extraction approach)
+
+If you must use it in an older UE:
+
+For meshes
+
+* In the newer UE project: select meshes → Asset Actions → Export → export as FBX
+* Import FBX into the older UE project
+
+For textures
+
+* Export textures (right click texture → export) or locate source files if included
+* Recreate materials in older UE (often needed)
+
+For materials
+
+* Materials often use newer nodes/features → you may need to rebuild them manually
+
+For blueprints
+
+* Sometimes you can open BP in newer version and copy nodes as text, then paste into older BP — but this is unreliable and often breaks due to missing nodes/features.
+* Consider treating BP systems as “reference” and rebuild key logic in the older project.
+
+For Niagara / Control Rig / MetaHuman / advanced UE5 features
+
+* Often not realistically back-portable.
+
+Plugins (UE5 plugin → UE4)
+
+Usually requires code changes and is often not worth it unless you’re experienced with C++ and engine APIs.
+
+---
+
+5) Moving assets from an older version to a newer version (UE4 → UE5 or UE5.1 → UE5.6)
+
+This is the most common and usually works.
+
+Safe upgrade steps
+
+1. Backup first (copy the project folder).
+2. Open the project in your newer engine version.
+3. Let UE convert the project.
+4. After it opens:
+
+   * Fix Up Redirectors in Content
+   * If there are plugins: enable them and restart
+   * Rebuild lighting if needed
+   * Let shaders compile (can take a while)
+
+Common issues and fixes
+
+* Blueprint errors: open the blueprint, replace deprecated nodes, recompile
+* Input system changes: UE5 may use Enhanced Input; old projects use legacy input
+* Materials/shaders: re-save materials, check texture compression settings
+* Physics changes: Chaos differences vs PhysX era (UE4)
+
+---
+
+Extra nuances worth adding (high-impact)
+
+A) Dependencies are everything
+
+Copy-pasting random `.uasset` files often fails because of missing dependencies.
+✅ Prefer Migrate whenever possible.
+
+B) Content path matters
+
+If a pack expects `/Game/MyPack/...` and you move it elsewhere, references may break.
+Try to keep the original folder structure when importing.
+
+C) “Project Settings” don’t migrate automatically
+
+Complete Projects often rely on:
+
+* input mappings
+* collision channels
+* rendering settings
+* plugins enabled
+  You may need to replicate those settings manually.
+
+D) Don’t overwrite your existing Content blindly
+
+Always merge carefully and keep backups.
+
+---
+
+Quick Troubleshooting
+
+1) “I can’t open the project / Missing modules / Plugin errors”
+
+A) Missing modules / “Project could not be compiled”
+
+This usually means the project (or plugin) includes C++ code.
+
+Fix:
+
+1. Make sure you have Visual Studio installed (Windows) or Xcode (Mac).
+2. Right-click the `.uproject` → Generate project files (Windows).
+3. Open the `.uproject` and choose Rebuild when asked.
+4. If it still fails, open the generated solution and build it once manually.
+
+B) “Plugin is missing or incompatible”
+
+Fix:
+
+1. Open the project folder → `Plugins/`
+2. Temporarily remove/rename the problematic plugin folder.
+3. Try opening the project again.
+4. If it opens, find an updated plugin version compatible with your UE version.
+
+---
+
+2) “I imported the asset but it’s broken / pink materials / missing references”
+
+Most common cause: missing dependencies
+
+Do not copy random `.uasset` files manually.
+
+✅ Best fix: use Migrate
+
+1. Open the original asset project.
+2. Select assets/folder in Content Browser.
+3. Right click → Asset Actions → Migrate
+4. Choose: `YourProject/Content/`
+
+Then:
+
+* Right click Content folder → Fix Up Redirectors in Folder
+* Save All
+* Restart the editor if needed
+
+---
+
+3) “The asset does not appear in Content Browser”
+
+Check these:
+
+* Did you put files inside: `YourProject/Content/...` ?
+* Are you using the correct engine project (UE vs Unity mix-ups happen)?
+* If it’s a plugin, the content may be inside: `Plugins/PluginName/Content/`
+
+In UE, make sure you can see plugin content:
+
+* Content Browser → View Options → enable Show Plugin Content
+
+---
+
+4) “Shaders are compiling / everything is black / looks wrong”
+
+This is normal after importing large content.
+
+Fix:
+
+* Wait until shader compilation finishes (can take time)
+* Open a few materials once and Save
+* Restart the editor if the view stays broken
+
+---
+
+5) “Blueprint errors after opening the project”
+
+Common after upgrading UE versions.
+
+Fix:
+
+1. Open the Blueprint → click Compile
+2. Replace deprecated nodes if UE shows warnings
+3. Check if required plugins are enabled:
+
+   * Edit → Plugins → enable → restart editor
+
+---
+
+6) “UE4 ↔ UE5 version mismatch” (important)
+
+Rule of thumb
+
+✅ Older → newer (UE4 → UE5) usually works (project conversion).
+❌ Newer → older (UE5 → UE4) is often not possible without exporting/rebuilding.
+
+---
+
+7) “How to downgrade content (UE5 → UE4 or newer → older)”
+
+Unreal does not officially support downgrading `.uasset` files.
+
+What usually works:
+
+* Meshes: export as FBX from newer UE → import into older UE
+* Textures: export/reuse source images → import into older UE
+* Materials: often must be rebuilt manually
+* Blueprints: rarely portable backwards (nodes/features may not exist)
+
+If the asset uses UE5-only systems (Niagara changes, Control Rig, MetaHuman, etc.), backporting may be unrealistic.
+
+---
+
+8) “Complete Project works, but my game doesn’t after migration”
+
+Some assets require Project Settings.
+
+Common settings that do NOT migrate automatically:
+
+* Input mappings / Enhanced Input setup
+* Collision channels
+* Plugins enabled
+* Maps & Modes / GameInstance
+* Physics settings (Chaos vs older configs)
+
+If something feels “missing”, compare the demo project settings with your project.
+
+---
+
+9) Quick checklist (do this first)
+
+✅ After importing/migrating:
+
+* Fix Up Redirectors
+* Save All
+* Wait for shaders to compile
+* Open & Compile key Blueprints
+* Restart UE if you enabled plugins
