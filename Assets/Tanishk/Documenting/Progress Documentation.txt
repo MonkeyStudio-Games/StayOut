@@ -1,0 +1,125 @@
+Core Mechanics Start(03-06-2026) End(...)
+
+List what we want to add(Game Mechanics)
+Moving Platdform
+Portal 
+Interaction System
+hook System
+
+
+List what we want to add(Hards)
+
+Prasure Plate
+Rotating Obstacle
+Patrolling AI
+Spikes
+Moving Spikes
+Swinging Axe
+Falling Spikes 
+Crushing Walls
+Laser
+Lightnning Pillar
+
+List what we want to add(Puzzles)
+
+Put soul in statue → statue moves
+Put soul in torch →  lights up
+Put soul in door → door opens
+Put box in Hole → door opens
+Collect Bones → Make Bridge
+
+6. There are several tombstones that can rotate.
+Each tombstone has a symbol.
+Player must rotate them so the symbols face a big grave statue.
+When all symbols face the statue → secret door opens.
+
+7. There are 3–4 bells in the level.
+When player hits a bell → ghosts move in a path.
+Goal:
+Ring bells in correct order so ghosts move onto spirit plates.
+When all ghosts stand on plates → gate opens.
+
+8. There are many candles, but only some should be lit.
+Player must follow symbols or marks on the wall.
+Correct candles → path lights up.
+Wrong candle → trap activates.
+
+9. There are different colored soul jars.
+Player must place jars on matching altars.
+But twist:
+Some altars swap jar positions
+Some altars lock until another jar is placed
+
+10. There are crow statues looking in different directions.
+Player must turn them toward something important:
+Examples:
+Toward a grave
+Toward a skull statue
+When all statues face correct direction → door unlocks.
+
+List what we want to add(Boss & Ablity)
+Boss 1 — The Bone Titan (Bone Strength)
+
+Boss Attacks
+
+Bone smash with huge arm
+Throws bone spears
+Summons small skeletons
+
+Boss Twist
+You must break different body parts:
+
+Legs
+Arms
+Skull
+
+Each part changes the fight.
+
+Soul Ability Reward:
+🦴 Bone Strength
+
+Player can:
+
+Push giant stone blocks
+Break cracked walls
+Move heavy objects in puzzles List what we are working on
+
+
+Boss 2 — The Phantom Warden (Ghost Soul)
+
+Arena:
+Ancient prison with many ghost gates.
+
+Boss Behavior
+
+The boss phases through gates and walls.
+
+Shoots ghost projectiles.
+
+Summons phantom copies.
+
+Puzzle in the Fight
+Sometimes the boss hides behind spirit gates.
+
+Player must:
+
+Pull levers to open gates
+
+Chase the boss through passages
+
+Final phase: boss traps player in a maze of ghost gates.
+
+Soul Reward:
+👻 Ghost Soul
+
+Ability:
+
+Pass through special spirit gates
+
+Access hidden rooms
+
+Solve puzzles with blocked paths
+
+
+
+List what we are added
